@@ -7,7 +7,7 @@ namespace WarehouseRolls.Repositories
         /// <summary>
         /// Добавляет новый рулон
         /// </summary>
-        Task<Roll> AddAsync(Roll roll, CancellationToken ct = default);
+        Task<Roll> CreateAsync(Roll roll, CancellationToken ct = default);
 
         /// <summary>
         /// Получить рулон по Id

@@ -13,7 +13,7 @@ namespace WarehouseRolls.Repositories
             _context = context;
         }
 
-        public async Task<Roll> AddAsync(Roll roll, CancellationToken ct = default)
+        public async Task<Roll> CreateAsync(Roll roll, CancellationToken ct = default)
         {
             await _context.AddAsync(roll);
             await _context.SaveChangesAsync();

@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using WarehouseRolls.Data;
+using WarehouseRolls.Repositories;
+using WarehouseRolls.Services;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,13 +18,27 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IRollRepository, EfRollRepository>();
+builder.Services.AddScoped<RollService>();
+
 var app = builder.Build();
 
 // --- Для разработки --- //
 if (app.Environment.IsDevelopment())
 {
+
     app.UseSwagger();
     app.UseSwaggerUI();
+    // app.UseSwaggerUI(options =>
+    // {
+    //     options.DocumentTitle = "/openapi/v1.json";
+    // });
+
+    // app.MapOpenApi("/openapi/v1.json");
+    // app.UseSwaggerUi(options =>
+    // {
+    //     options.DocumentPath = "/openapi/v1.json";
+    // });
 }
 
 app.UseHttpsRedirection();
