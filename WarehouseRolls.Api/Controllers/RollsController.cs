@@ -9,9 +9,9 @@ namespace WarehouseRolls.Controllers
     [Route("api/rolls")]
     public class RollsController : ControllerBase
     {
-        private readonly RollService _rollService;
+        private readonly IRollService _rollService;
 
-        public RollsController(RollService rollService)
+        public RollsController(IRollService rollService)
         {
             _rollService = rollService;
         }

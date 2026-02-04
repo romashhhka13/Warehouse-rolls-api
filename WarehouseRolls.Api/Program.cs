@@ -21,7 +21,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IRollRepository, EfRollRepository>();
-builder.Services.AddScoped<RollService>();
+builder.Services.AddScoped<IRollService, RollService>();
+builder.Services.AddDbContext<WarehouseRollsDbContext>();
 
 var app = builder.Build();
 
@@ -33,7 +34,13 @@ app.UseExceptionHandler(errorApp =>
         var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
         context.Response.ContentType = "application/json";
 
-        if (exception is NpgsqlException || exception is DbUpdateException)
+        if (exception is ArgumentException or ArgumentNullException)
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsync("{\"error\":\"Данные не валидны\"}");
+
+        }
+        else if (exception is NpgsqlException || exception is DbUpdateException)
         {
             context.Response.StatusCode = 503;
             await context.Response.WriteAsync("{\"error\":\"Ошибка базы данных\"}");

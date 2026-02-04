@@ -8,7 +8,7 @@ using WarehouseRolls.Repositories;
 /// </summary>
 namespace WarehouseRolls.Services
 {
-    public class RollService
+    public class RollService : IRollService
     {
         private readonly IRollRepository _repository;
         public RollService(IRollRepository repository)
@@ -16,11 +16,17 @@ namespace WarehouseRolls.Services
             _repository = repository;
         }
 
-        /// <summary>
-        /// Создать новый рулон
-        /// </summary>
         public async Task<RollDto> CreateRollAsync(CreateRollDto dto, CancellationToken ct = default)
         {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto), "DTO не может быть null");
+
+            if (dto.Length <= 0.01)
+                throw new ArgumentException("Длина должна быть больше 0.01", nameof(dto.Length));
+
+            if (dto.Weight <= 0.001)
+                throw new ArgumentException("Вес должен быть больше 0.001", nameof(dto.Weight));
+
             var roll = new Roll
             {
                 Id = Guid.NewGuid(),
@@ -33,27 +39,18 @@ namespace WarehouseRolls.Services
             return MapToDto(created);
         }
 
-        /// <summary>
-        /// Получить рулон по Id
-        /// </summary>
         public async Task<RollDto?> GetRollAsync(Guid id, CancellationToken ct = default)
         {
             var roll = await _repository.GetAsync(id, ct);
             return roll == null ? null : MapToDto(roll);
         }
 
-        /// <summary>
-        /// Удалить рулон
-        /// </summary>
         public async Task<RollDto?> DeleteRollAsync(Guid id, CancellationToken ct = default)
         {
             var roll = await _repository.DeleteAsync(id, ct);
             return roll == null ? null : MapToDto(roll);
         }
 
-        /// <summary>
-        /// Получить список рулонов с фильтрацией
-        /// </summary>
         public async Task<List<RollDto>> GetFilteredRollsAsync(RollFilterDto filter, CancellationToken ct = default)
         {
             var query = _repository.Query();
@@ -89,19 +86,16 @@ namespace WarehouseRolls.Services
             if (filter.DeletedAtMax.HasValue)
                 query = query.Where(r => r.DeletedAt.HasValue && r.DeletedAt <= filter.DeletedAtMax.Value);
 
-            var rolls = await query.ToListAsync(ct);
+            var rolls = query.ToList();
             return rolls.Select(MapToDto).ToList();
         }
 
-        /// <summary>
-        /// Получить статистику за период
-        /// </summary>
         public async Task<RollStatisticsDto> GetStatisticsAsync(
             DateTimeOffset periodStart,
             DateTimeOffset periodEnd,
             CancellationToken ct = default)
         {
-            List<Roll> rolls = await _repository.Query().ToListAsync(ct) ?? new List<Roll>();
+            List<Roll> rolls = _repository.Query().ToList() ?? new List<Roll>();
 
             // Рулоны, добавленные в период
             var createdInPeriod = rolls
@@ -162,6 +156,10 @@ namespace WarehouseRolls.Services
 
             return stats;
         }
+
+
+        // PRIVATE
+
 
         /// <summary>
         /// Вспомогательный метод для расчёта дневных количеств рулонов
