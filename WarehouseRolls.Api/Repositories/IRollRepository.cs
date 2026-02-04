@@ -17,7 +17,7 @@ namespace WarehouseRolls.Repositories
         /// <summary>
         /// Удалить рулон
         /// </summary>
-        Task<Roll> DeleteAsync(Guid id, CancellationToken ct = default);
+        Task<Roll?> DeleteAsync(Guid id, CancellationToken ct = default);
 
         /// <summary>
         /// Для гибкой фильтрации

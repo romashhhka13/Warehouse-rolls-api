@@ -101,7 +101,7 @@ namespace WarehouseRolls.Services
             DateTimeOffset periodEnd,
             CancellationToken ct = default)
         {
-            var rolls = await _repository.Query().ToListAsync(ct);
+            List<Roll> rolls = await _repository.Query().ToListAsync(ct) ?? new List<Roll>();
 
             // Рулоны, добавленные в период
             var createdInPeriod = rolls
@@ -145,13 +145,13 @@ namespace WarehouseRolls.Services
                             && r.CreatedAt <= periodEnd
                             && r.DeletedAt.Value >= periodStart
                             && r.DeletedAt.Value <= periodEnd)
-                .Select(r => r.DeletedAt.Value - r.CreatedAt)
+                .Select(r => r.DeletedAt!.Value - r.CreatedAt)
                 .ToList();
 
-            if (removedWithDuration.Any())
+            if (removedDurations.Any())
             {
-                stats.MaxStorageDuration = removedWithDuration.Max();
-                stats.MinStorageDuration = removedWithDuration.Min();
+                stats.MaxStorageDuration = removedDurations.Max();
+                stats.MinStorageDuration = removedDurations.Min();
             }
 
             // День с минимальным и максимальным количеством рулонов

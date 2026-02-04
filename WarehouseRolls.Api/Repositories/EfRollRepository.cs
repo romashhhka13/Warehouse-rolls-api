@@ -25,7 +25,7 @@ namespace WarehouseRolls.Repositories
             return await _context.Rolls.FirstOrDefaultAsync(r => r.Id == id, ct);
         }
 
-        public async Task<Roll> DeleteAsync(Guid id, CancellationToken ct = default)
+        public async Task<Roll?> DeleteAsync(Guid id, CancellationToken ct = default)
         {
             var roll = await _context.Rolls.FirstOrDefaultAsync(r => r.Id == id, ct);
             if (roll == null)
