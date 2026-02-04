@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace WarehouseRolls.Dtos
 {
     /// <summary>
-    /// DTO для отправки/получения рулона через API
+    /// DTO для отправки рулона через API
     /// </summary>
     public class RollDto
     {

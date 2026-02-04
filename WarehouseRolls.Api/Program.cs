@@ -3,6 +3,8 @@ using WarehouseRolls.Data;
 using WarehouseRolls.Repositories;
 using WarehouseRolls.Services;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Diagnostics;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,28 @@ builder.Services.AddScoped<IRollRepository, EfRollRepository>();
 builder.Services.AddScoped<RollService>();
 
 var app = builder.Build();
+
+// Middleware - обработка исключений
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        context.Response.ContentType = "application/json";
+
+        if (exception is NpgsqlException || exception is DbUpdateException)
+        {
+            context.Response.StatusCode = 503;
+            await context.Response.WriteAsync("{\"error\":\"Ошибка базы данных\"}");
+        }
+        else
+        {
+            context.Response.StatusCode = 500;
+            await context.Response.WriteAsync("{\"error\":\"Внутренняя ошибка сервера\"}");
+        }
+    });
+});
+
 
 // --- Для разработки --- //
 if (app.Environment.IsDevelopment())
