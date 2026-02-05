@@ -60,16 +60,13 @@ if (app.Environment.IsDevelopment())
 
     app.UseSwagger();
     app.UseSwaggerUI();
-    // app.UseSwaggerUI(options =>
-    // {
-    //     options.DocumentTitle = "/openapi/v1.json";
-    // });
+}
 
-    // app.MapOpenApi("/openapi/v1.json");
-    // app.UseSwaggerUi(options =>
-    // {
-    //     options.DocumentPath = "/openapi/v1.json";
-    // });
+// Автомиграция, создаются таблицы
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<WarehouseRollsDbContext>();
+    context.Database.EnsureCreated();
 }
 
 app.UseHttpsRedirection();

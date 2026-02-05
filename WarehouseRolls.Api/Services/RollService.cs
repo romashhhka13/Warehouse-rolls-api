@@ -21,10 +21,10 @@ namespace WarehouseRolls.Services
             if (dto == null)
                 throw new ArgumentNullException(nameof(dto), "DTO не может быть null");
 
-            if (dto.Length <= 0.01)
+            if (dto.Length < 0.01)
                 throw new ArgumentException("Длина должна быть больше 0.01", nameof(dto.Length));
 
-            if (dto.Weight <= 0.001)
+            if (dto.Weight < 0.001)
                 throw new ArgumentException("Вес должен быть больше 0.001", nameof(dto.Weight));
 
             var roll = new Roll
